@@ -29,7 +29,7 @@ class LinkedList {
       this.tail.next = newNode;
       this.tail = newNode;
     }
-    this.length++; // Increment length
+    this.length++;
   }
   
 
@@ -44,88 +44,88 @@ class LinkedList {
       newNode.next = this.head;
       this.head = newNode;
     }
-    this.length++; // Increment length
+    this.length++; 
   }
   
 
- /** pop(): return & remove last item. */
-pop() {
-  if (!this.head) return null; // Early return if list is empty
+  /** pop(): return & remove last item. */
+  pop() {
+    if (!this.head) return null;
   
-  const lastNode = this.tail;
-  let secondToLast = null;
+    const lastNode = this.tail;
+    let secondToLast = null;
   
-  let currentNode = this.head;
-  while (currentNode !== null && currentNode.next !== null) {
-    secondToLast = currentNode;
-    currentNode = currentNode.next;
+    let currentNode = this.head;
+    while (currentNode !== null && currentNode.next !== null) {
+      secondToLast = currentNode;
+      currentNode = currentNode.next;
+    }
+  
+    if (secondToLast !== null) {
+      secondToLast.next = null;
+      this.tail = secondToLast;
+    } else {
+      this.head = null; 
+      this.tail = null;
+    }
+  
+    this.length--; 
+  
+    if (this.length === 0) {
+      this.head = null;
+      this.tail = null;
+    }
+  
+    return lastNode ? lastNode.val : null; 
   }
-  
-  if (secondToLast !== null) {
-    secondToLast.next = null;
-    this.tail = secondToLast;
-  } else {
-    this.head = null; // Handle the case where the list had only one element
-    this.tail = null;
-  }
-  
-  this.length--; // Decrement length
-  
-  if (this.length === 0) {
-    this.head = null;
-    this.tail = null;
-  }
-  
-  return lastNode ? lastNode.val : null; // Return the value of the node or null if the list is empty
-}
 
 
   
 
   /** shift(): return & remove first item. */
-shift() {
-  if (!this.head) return null; // Early return if list is empty
+  shift() {
+    if (!this.head) return null; 
     
-  const firstNode = this.head;
-  this.head = firstNode.next;
+    const firstNode = this.head;
+    this.head = firstNode.next;
   
-  // Check if the list becomes empty after shifting
-  if (!this.head) {
-    this.tail = null;
+    
+    if (!this.head) {
+      this.tail = null;
+    }
+  
+    this.length--; 
+  
+    return firstNode.val; 
   }
-  
-  this.length--; // Decrement length
-  
-  return firstNode.val; // Return the value of the removed node
-}
 
   
 
   /** getAt(idx): get val at idx. */
 getAt(idx) {
-  if (idx < 0 || idx >= this.length) return null; // Validate index bounds
+  if (idx < 0 || idx >= this.length) return null; 
 
   let target = this.head;
   for (let i = 0; i < idx; i++) {
     target = target.next;
   }
-  return target ? target.val : null; // Return the value of the node or null if out of bounds
+  return target ? target.val : null; 
 }
 
   /** setAt(idx, val): set val at idx to val */
-setAt(idx, val) {
-  if (idx < 0 || idx >= this.length) return null; // Validate index bounds
+  setAt(idx, val) {
+    if (idx < 0 || idx >= this.length) return null; 
 
-  let target = this.head;
-  for (let i = 0; i < idx; i++) {
-    target = target.next;
+    let target = this.head;
+    for (let i = 0; i < idx; i++) {
+      target = target.next;
+    }
+    
+    const oldValue = target ? target.val : null; 
+    target.val = val; 
+
+    return oldValue;
   }
-  
-  const oldValue = target ? target.val : null; // Store the old value
-  target.val = val; // Update the value at the specified index
-
-  return oldValue; // Return the old value
-}
 
 
   /** insertAt(idx, val): add node w/val before idx. */
@@ -133,52 +133,64 @@ setAt(idx, val) {
   insertAt(idx, val) {
     const newNode = new Node(val);
 
-    // Special case for inserting at the beginning of the list
     if (idx === 0) {
       newNode.next = this.head;
       this.head = newNode;
-      if (this.tail === null) {
-        this.tail = newNode;
-      }
+      this.tail = newNode; 
     } else {
       let current = this.head;
       let previous = null;
 
-      // Find the node before the insertion point
       for (let i = 0; i < idx; i++) {
         previous = current;
-        current = current.next;
+        current = current ? current.next : null; 
       }
 
-      // Insert the new node
       newNode.next = current;
-      previous.next = newNode;
+      if (previous) {
+        previous.next = newNode;
+      } else {
+        this.head = newNode; 
+      }
 
-      // Update tail if necessary
-      if (current === this.tail) {
+      if (!current || !current.next) { 
         this.tail = newNode;
       }
     }
 
-    // Increment the length of the list
     this.length++;
   }
-}
 
   /** removeAt(idx): return & remove item at idx, */
 
   removeAt(idx) {
-    const target = this.head;
-    if(idx == 0){
-      this.head = target.next;
-      return target;
-    }else{
-      for(let i = 0; i < idx; i++){
-        target = target.next;
+    if (idx === 0) {
+      const oldHead = this.head;
+      this.head = this.head ? this.head.next : null;
+      if (!this.head) {
+        this.tail = null;
       }
-
+      this.length--;
+      return oldHead;
+    } else {
+      let current = this.head;
+      let previous = null;
+      for (let i = 0; i < idx; i++) {
+        previous = current;
+        current = current ? current.next : null;
+      }
+      if (!current) {
+        throw new Error('Index out of bounds');
+      }
+      previous.next = current.next;
+      this.length--;
+      if (current === this.tail) {
+        this.tail = previous;
+      }
+      return current;
     }
   }
+  
 
   /** average(): return an average of all values in the list */
 
